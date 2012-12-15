@@ -27,7 +27,9 @@ class Spy extends Unit {
   public function update() {
   }
 
-  public function move(x:Int, y:Int) {
-
+  public override function move(overType:Int, x:Float, y:Float) {
+    this.overType = overType;
+    this.x = x;
+    this.y = y;
   }
 }

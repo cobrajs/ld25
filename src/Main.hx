@@ -42,6 +42,7 @@ class Main extends Sprite {
   }
   
   private function update():Void {
+    screenManager.update();
   }
 
 

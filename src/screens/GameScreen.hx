@@ -1,7 +1,10 @@
 package screens;
 
+import nme.events.MouseEvent;
 import Field;
 import Spy;
+
+import util.MovementManager;
 
 import tiles.Tiled;
 
@@ -14,6 +17,8 @@ class GameScreen extends Screen {
   public var tiles:Tiled;
 
   private var spy:Spy;
+
+  private var mover:MovementManager;
 
   public override function new(uWidth:Int, uHeight:Int) {
     super();
@@ -35,6 +40,9 @@ class GameScreen extends Screen {
 
     addChild(spy);
 
+    mover = new MovementManager(tiles.tileWidth, tiles.tileHeight);
+    
+    addEventListener(MouseEvent.MOUSE_UP, mouseUp);
   }
 
   public override function enter() {
@@ -44,5 +52,11 @@ class GameScreen extends Screen {
   }
 
   public override function update() {
+    mover.update();
+  }
+
+  public function mouseUp(event:MouseEvent) {
+    trace(Math.floor(event.localX / tiles.tileWidth));
+    mover.addMovement(spy, Math.floor(event.localX / tiles.tileWidth), Math.floor(event.localY / tiles.tileHeight), true);
   }
 }

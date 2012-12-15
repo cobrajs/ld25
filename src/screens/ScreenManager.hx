@@ -5,14 +5,14 @@ import nme.display.Stage;
 import screens.GameScreen;
 
 class ScreenManager {
-  public var screens:Hash<Dynamic>;
+  public var screens:Hash<Screen>;
 
-  public var current:Dynamic;
+  public var current:Screen;
 
   public function new(stage:Stage) {
     var gameScreen = new GameScreen(stage.stageWidth, stage.stageHeight);
 
-    screens = new Hash<Dynamic>();
+    screens = new Hash<Screen>();
 
     screens.set("game", gameScreen);
 
@@ -22,5 +22,9 @@ class ScreenManager {
   }
 
   public function changeScreen(name:String) {
+  }
+  
+  public function update() {
+    current.update();
   }
 }
