@@ -22,10 +22,11 @@ class Animation {
   public var tileWidth:Int;
   public var tileHeight:Int;
 
-  public var tilesheet:Tilesheet;
-  public var tilesheetFlipped:Tilesheet;
+  public var tilesheets:IntHash<Tilesheet>;
+  public var currentTilesheet:Tilesheet;
+  public var currentRotation:Int;
 
-  public function new(xmlName:String, drawSpace:Graphics, ?flipped:Bool = false) {
+  public function new(xmlName:String, drawSpace:Graphics, ?flipped:Bool = false, ?rotated:Bool = false) {
     states = new Hash<AnimationState>();
 
     this.drawSpace = drawSpace;
@@ -34,9 +35,22 @@ class Animation {
 
     var tilesheetData = Assets.getBitmapData(xml.node.info.node.source.innerData);
 
-    tilesheet = new Tilesheet(tilesheetData);
+    ImageOpts.keyBitmapData(tilesheetData);
+
+    tilesheets = new IntHash<Tilesheet>();
+    currentTilesheet = new Tilesheet(tilesheetData);
+    currentRotation = 0;
+
+    tilesheets.set(0, currentTilesheet);
+
     if (flipped) {
-      tilesheetFlipped = new Tilesheet(ImageOpts.flipImageData(tilesheetData));
+      tilesheets.set(-1, new Tilesheet(ImageOpts.flipImageData(tilesheetData)));
+    }
+
+    if (rotated) {
+      for (x in [90, 180, 270]) {
+        tilesheets.set(x, new Tilesheet(ImageOpts.rotateImageData(tilesheetData, x)));
+      }
     }
 
     tilesX = Std.parseInt(xml.node.info.node.tilesx.innerData);
@@ -47,9 +61,14 @@ class Animation {
 
     for (y in 0...tilesY) {
       for (x in 0...tilesX) {
-        tilesheet.addTileRect(new Rectangle(x * tileWidth, y * tileHeight, tileWidth, tileHeight));
+        tilesheets.get(0).addTileRect(new Rectangle(x * tileWidth, y * tileHeight, tileWidth, tileHeight));
         if (flipped) {
-          tilesheetFlipped.addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, y * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(-1).addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, y * tileHeight, tileWidth, tileHeight));
+        }
+        if (rotated) {
+          tilesheets.get(90).addTileRect(new Rectangle((tilesX - y - 1) * tileWidth, x * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(180).addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, (tilesY - y - 1) * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(270).addTileRect(new Rectangle(y * tileWidth, (tilesY - x - 1) * tileHeight, tileWidth, tileHeight));
         }
       }
     }
@@ -66,15 +85,16 @@ class Animation {
 
   public function update() {
     currentState.update();
-    tilesheet.drawTiles(drawSpace, [0, 0, currentState.current]);
+    drawSpace.clear();
+    currentTilesheet.drawTiles(drawSpace, [0, 0, currentState.current]);
   }
 
   public function draw(image:Dynamic, ?x:Int = 0, ?y:Int = 0) {
     if (Std.is(image, Graphics)) {
-      tilesheet.drawTiles(image, [x, y, currentState.current]);
+      currentTilesheet.drawTiles(image, [x, y, currentState.current]);
     }
     else if (Std.is(image, Sprite)) {
-      tilesheet.drawTiles(image.graphics, [x, y, currentState.current]);
+      currentTilesheet.drawTiles(image.graphics, [x, y, currentState.current]);
     }
   }
 
@@ -86,11 +106,30 @@ class Animation {
       currentState = states.get(state);
     }
   }
+
+  public function changeRotation(rotation:Int) {
+    currentRotation = rotation;
+    currentTilesheet = tilesheets.get(rotation);
+    currentTilesheet.drawTiles(drawSpace, [0, 0, currentState.current]);
+  }
+
+  public function turnRight() {
+    changeRotation(currentRotation + 90 >= 360 ? 0 : currentRotation + 90);
+  }
+
+  public function turnLeft() {
+    changeRotation(currentRotation - 90 < 0 ? 270 : currentRotation - 90);
+  }
+
+  public function flip() {
+    changeRotation(currentRotation == 0 ? -1 : 0);
+  }
 }
 
 private class AnimationState {
   private var start:Int;
   private var end:Int;
+  private var length:Int;
   public var current:Int;
   private var delay:Int;
   private var changeDelay:Int;
@@ -102,6 +141,7 @@ private class AnimationState {
     this.name = name;
     this.start = start;
     this.end = end;
+    this.length = end - start + 1;
     this.current = 0;
     this.delay = 0;
     this.changeDelay = 500;
@@ -110,25 +150,27 @@ private class AnimationState {
   }
 
   public function update() {
-    var change = false;
-    var offset = 0;
-    if (lastUpdate != -1) {
-      var currentDate = Date.now().getTime();
-      offset = Math.floor(currentDate - lastUpdate);
-      lastUpdate = currentDate;
-    }
-    else {
-      lastUpdate = Date.now().getTime();
-    }
-
-    delay += offset;
-    if (delay > changeDelay * delayOffset) {
-      delay = 0;
-      current += 1;
-      if (current > end) {
-        current = start;
+    if (length > 1) {
+      var change = false;
+      var offset = 0;
+      if (lastUpdate != -1) {
+        var currentDate = Date.now().getTime();
+        offset = Math.floor(currentDate - lastUpdate);
+        lastUpdate = currentDate;
       }
-      change = true;
+      else {
+        lastUpdate = Date.now().getTime();
+      }
+
+      delay += offset;
+      if (delay > changeDelay * delayOffset) {
+        delay = 0;
+        current += 1;
+        if (current > end) {
+          current = start;
+        }
+        change = true;
+      }
     }
   }
 

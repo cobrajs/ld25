@@ -1,6 +1,7 @@
 package screens;
 
 import Field;
+import Spy;
 
 import tiles.Tiled;
 
@@ -11,6 +12,8 @@ class GameScreen extends Screen {
   public var uHeight:Int;
 
   public var tiles:Tiled;
+
+  private var spy:Spy;
 
   public override function new(uWidth:Int, uHeight:Int) {
     super();
@@ -27,6 +30,11 @@ class GameScreen extends Screen {
     tiles.drawLayer("Display", field.background.graphics, uWidth / (tiles.tilesX * tiles.tileWidth));
 
     addChild(field);
+
+    spy = new Spy();
+
+    addChild(spy);
+
   }
 
   public override function enter() {

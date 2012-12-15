@@ -49,4 +49,26 @@ class ImageOpts {
 
     return tempData;
   }
+
+  public static function rotateImageData(imageData:BitmapData, ?dir:Int = 90):BitmapData {
+    var tempData = new BitmapData(imageData.width, imageData.height);
+
+    var transformX = 
+      dir == 90 ?   function(x, y) { return imageData.width - y; } :
+      dir == 180 ?  function(x, y) { return imageData.width - x; } :
+      /*     270 */ function(x, y) { return y; };
+
+    var transformY = 
+      dir == 90 ?   function(x, y) { return x; } :
+      dir == 180 ?  function(x, y) { return imageData.height - y; } :
+      /*     270 */ function(x, y) { return imageData.height - x; };
+
+    for (y in 0...imageData.height) {
+      for (x in 0...imageData.width) {
+        tempData.setPixel32(transformX(x, y), transformY(x, y), imageData.getPixel32(x, y));
+      }
+    }
+
+    return tempData;
+  }
 }
