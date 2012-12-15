@@ -33,7 +33,7 @@ class Field extends Sprite {
     grid = new Shape();
 
     var gfx = grid.graphics;
-    gfx.lineStyle(2, 0x000000);
+    gfx.lineStyle(1, 0x555555, 0.5);
     for (y in 0...tilesY) {
       for (x in 0...tilesX) {
         gfx.drawRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);

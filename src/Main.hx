@@ -19,9 +19,11 @@ import graphics.Animation;
 
 import screens.GameScreen;
 
+import screens.ScreenManager;
+
 class Main extends Sprite {
 
-  private var gameScreen:GameScreen;
+  private var screenManager:ScreenManager;
 
   public function new() {
     super();
@@ -32,8 +34,7 @@ class Main extends Sprite {
   private function construct():Void {
     addEventListener(Event.ENTER_FRAME, enterFrame);
 
-    gameScreen = new GameScreen(stage.stageWidth, stage.stageHeight);
-    addChild(gameScreen);
+    screenManager = new ScreenManager(stage);
 
     stage.addEventListener(KeyboardEvent.KEY_DOWN, stageKeyDown);
     stage.addEventListener(MouseEvent.MOUSE_MOVE, stageMouseMove);
