@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="16" height="12" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="grass_tiles" tilewidth="16" tileheight="16">
+  <image source="../grass_tiles.png" trans="ff00ff" width="128" height="128"/>
+ </tileset>
+ <layer name="Display" width="16" height="12">
+  <data encoding="base64" compression="zlib">
+   eJwTYmBgEMKDpQnIE8Kk6GeEYlEktjQSGxvGpp8NiJmgWB2JjQ1j089Mhv3IdvKi6RcloB9mpwiZ9pOqH6ROGIqx+RnGBrlbBYil8GCYn3mQ2Bxo9ovgiXN8ZoOwAh691MAA+XgJKQ==
+  </data>
+ </layer>
+ <layer name="Movement" width="16" height="12" opacity="0.4">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYBxmmJMEjEs/pXaSo59S+wdCPynhOhgxAH3+AaE=
+  </data>
+ </layer>
+ <layer name="Placement" width="16" height="12" opacity="0.42">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYBwkmBOKkdmCSGxsGJf+gbAfm1mCaHxs+jnR9JHqF0r0Y/MzupmUhiU+LEgA0zrNAQA5/ALp
+  </data>
+ </layer>
+</map>
