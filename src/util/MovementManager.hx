@@ -1,23 +1,27 @@
 package util;
 
 import nme.display.Sprite;
+import nme.geom.Point;
 
 class MovementManager {
   public var tileWidth:Int;
   public var tileHeight:Int;
+  public var tileScaling:Float;
 
   public var movements:Array<Movement>;
 
-  public function new(tileWidth:Int, tileHeight:Int) {
+  public function new(tileWidth:Int, tileHeight:Int, tileScaling:Float) {
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
+
+    this.tileScaling = tileScaling;
 
     movements = new Array<Movement>();
   }
 
   public function addMovement(thing:Unit, x:Float, y:Float, ?tilePlace:Bool = false) {
     if (tilePlace) {
-      movements.push(new Movement(thing, x * tileWidth, y * tileHeight, tileWidth, tileHeight, 100));
+      movements.push(new Movement(thing, x * (tileWidth * tileScaling), y * (tileHeight * tileScaling), tileWidth, tileHeight, 100));
     }
     else {
       movements.push(new Movement(thing, x, y, tileWidth, tileHeight, 100));
@@ -33,6 +37,7 @@ class MovementManager {
     var movementIndex = 0;
     while (movementIndex < movements.length) {
       if (movements[movementIndex].currentStep >= movements[movementIndex].steps) {
+        movements[movementIndex].end();
         movements.splice(movementIndex, 1);
       }
       else {
@@ -87,8 +92,8 @@ class Movement {
   public function begin() {
     started = true;
 
-    this.fromX = moveObj.x == null ? 0 : moveObj.x;
-    this.fromY = moveObj.y == null ? 0 : moveObj.y;
+    this.fromX = moveObj.x;
+    this.fromY = moveObj.y;
 
     this.currentX = this.fromX;
     this.currentY = this.fromY;
@@ -98,6 +103,8 @@ class Movement {
 
     this.moveX = (toX - fromX ) / steps;
     this.moveY = (toY - fromY) / steps;
+
+    moveObj.startMove(new Point(this.toX, this.toY));
   }
 
   public function update() {
@@ -111,6 +118,10 @@ class Movement {
 
       moveObj.move(1, this.currentX, this.currentY);
     }
+  }
+
+  public function end() {
+    moveObj.endMove();
   }
 }
 

@@ -18,7 +18,7 @@ class ImageOpts {
   }
 
   public static function flipImageData(imageData:BitmapData, ?xFlip:Bool = true, ?yFlip:Bool = false):BitmapData {
-    var tempData = new BitmapData(imageData.width, imageData.height);
+    var tempData = new BitmapData(imageData.width, imageData.height, true);
 
     var xMin = xFlip ? imageData.width - 1 : 0;
     var xMax = xFlip ? -1 : imageData.width;
@@ -51,7 +51,7 @@ class ImageOpts {
   }
 
   public static function rotateImageData(imageData:BitmapData, ?dir:Int = 90):BitmapData {
-    var tempData = new BitmapData(imageData.width, imageData.height);
+    var tempData = new BitmapData(imageData.width, imageData.height, true);
 
     var transformX = 
       dir == 90 ?   function(x, y) { return imageData.width - y; } :

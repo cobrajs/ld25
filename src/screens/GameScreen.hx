@@ -20,6 +20,8 @@ class GameScreen extends Screen {
 
   private var mover:MovementManager;
 
+  private var tileScaling:Float;
+
   public override function new(uWidth:Int, uHeight:Int) {
     super();
 
@@ -28,11 +30,12 @@ class GameScreen extends Screen {
 
     name = "game";
 
-    field = new Field(uWidth, uHeight, Std.int(uWidth/ 40), Std.int(uHeight / 40));
-
     tiles = new Tiled("map1.tmx");
+    this.tileScaling = uWidth / (tiles.tilesX * tiles.tileWidth);
 
-    tiles.drawLayer("Display", field.background.graphics, uWidth / (tiles.tilesX * tiles.tileWidth));
+    field = new Field(uWidth, uHeight, tiles.tilesX, tiles.tilesY);
+
+    tiles.drawLayer("Display", field.background.graphics, tileScaling);
 
     addChild(field);
 
@@ -40,7 +43,7 @@ class GameScreen extends Screen {
 
     addChild(spy);
 
-    mover = new MovementManager(tiles.tileWidth, tiles.tileHeight);
+    mover = new MovementManager(tiles.tileWidth, tiles.tileHeight, tileScaling);
     
     addEventListener(MouseEvent.MOUSE_UP, mouseUp);
   }
@@ -53,10 +56,10 @@ class GameScreen extends Screen {
 
   public override function update() {
     mover.update();
+    spy.update();
   }
 
   public function mouseUp(event:MouseEvent) {
-    trace(Math.floor(event.localX / tiles.tileWidth));
-    mover.addMovement(spy, Math.floor(event.localX / tiles.tileWidth), Math.floor(event.localY / tiles.tileHeight), true);
+    mover.addMovement(spy, Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)), true);
   }
 }

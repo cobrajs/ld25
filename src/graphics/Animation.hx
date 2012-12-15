@@ -33,7 +33,9 @@ class Animation {
 
     var xml = new Fast(Xml.parse(Assets.getText("assets/" + xmlName)).firstElement());
 
-    var tilesheetData = Assets.getBitmapData(xml.node.info.node.source.innerData);
+    var tempTempData = Assets.getBitmapData(xml.node.info.node.source.innerData);
+    var tilesheetData = new BitmapData(tempTempData.width, tempTempData.height, true);
+    tilesheetData.copyPixels(tempTempData, new Rectangle(0, 0, tempTempData.width, tempTempData.height), new Point(0, 0), null, null, true);
 
     ImageOpts.keyBitmapData(tilesheetData);
 
@@ -66,9 +68,9 @@ class Animation {
           tilesheets.get(-1).addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, y * tileHeight, tileWidth, tileHeight));
         }
         if (rotated) {
-          tilesheets.get(90).addTileRect(new Rectangle((tilesX - y - 1) * tileWidth, x * tileHeight, tileWidth, tileHeight));
-          tilesheets.get(180).addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, (tilesY - y - 1) * tileHeight, tileWidth, tileHeight));
-          tilesheets.get(270).addTileRect(new Rectangle(y * tileWidth, (tilesY - x - 1) * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(90).addTileRect(new Rectangle(Math.floor((tilesX - y - 1) * tileWidth), x * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(180).addTileRect(new Rectangle(Math.floor((tilesX - x - 1) * tileWidth), Math.floor((tilesY - y - 1) * tileHeight), tileWidth, tileHeight));
+          tilesheets.get(270).addTileRect(new Rectangle(Math.floor(y * tileWidth), Math.floor((tilesY - x - 1) * tileHeight), tileWidth, tileHeight));
         }
       }
     }
@@ -110,6 +112,7 @@ class Animation {
   public function changeRotation(rotation:Int) {
     currentRotation = rotation;
     currentTilesheet = tilesheets.get(rotation);
+    drawSpace.clear();
     currentTilesheet.drawTiles(drawSpace, [0, 0, currentState.current]);
   }
 
@@ -131,8 +134,8 @@ private class AnimationState {
   private var end:Int;
   private var length:Int;
   public var current:Int;
-  private var delay:Int;
-  private var changeDelay:Int;
+  private var delay:Float;
+  private var changeDelay:Float;
   private var delayOffset:Int;
   private var lastUpdate:Float;
   public var name:String;
@@ -144,22 +147,38 @@ private class AnimationState {
     this.length = end - start + 1;
     this.current = 0;
     this.delay = 0;
-    this.changeDelay = 500;
+#if (neko || cpp)
+    this.changeDelay = changeDelay / 1000;
+#else
+    this.changeDelay = changeDelay;
+#end
     this.delayOffset = 1;
+#if (neko || cpp)
+    this.lastUpdate = Sys.time();
+#else 
     this.lastUpdate = Date.now().getTime();
+#end
   }
 
   public function update() {
     if (length > 1) {
       var change = false;
-      var offset = 0;
+      var offset:Float = 0;
       if (lastUpdate != -1) {
+#if (neko || cpp)
+        var currentDate = Sys.time();
+#else 
         var currentDate = Date.now().getTime();
-        offset = Math.floor(currentDate - lastUpdate);
+#end
+        offset = currentDate - lastUpdate;
         lastUpdate = currentDate;
       }
       else {
+#if (neko || cpp)
+        lastUpdate = Sys.time();
+#else 
         lastUpdate = Date.now().getTime();
+#end
       }
 
       delay += offset;

@@ -1,6 +1,7 @@
 package ;
 
 import nme.display.Sprite;
+import nme.geom.Point;
 
 import graphics.Animation;
 
@@ -15,5 +16,15 @@ class Unit extends Sprite {
   public function move(overType:Int, x:Float, y:Float) {
     this.x = x;
     this.y = y;
+  }
+
+  public function endMove():Void {
+  }
+
+  public function startMove(dest:Point):Void {
+  }
+
+  public function update() {
+    anim.update();
   }
 }
