@@ -3,6 +3,8 @@ package util;
 import nme.display.Sprite;
 import nme.geom.Point;
 
+import tiles.Grid;
+
 class MovementManager {
   public var tileWidth:Int;
   public var tileHeight:Int;
@@ -11,6 +13,8 @@ class MovementManager {
   public var functions:Array<Void->Void>;
 
   public var movements:Array<Movement>;
+
+  public var paused:Bool;
 
   public function new(tileWidth:Int, tileHeight:Int, tileScaling:Float) {
     this.tileWidth = tileWidth;
@@ -21,6 +25,8 @@ class MovementManager {
     movements = new Array<Movement>();
 
     functions = new Array<Void->Void>();
+
+    paused = false;
   }
 
   public function addMovement(thing:Unit, x:Float, y:Float, ?tilePlace:Bool = false) {
@@ -37,38 +43,112 @@ class MovementManager {
   }
 
   public function update() {
-    if (movements.length > 0) {
-      for (movement in movements) {
-        movement.update();
-        break;
-      }
+    if (!paused) {
+      if (movements.length > 0) {
+        for (movement in movements) {
+          movement.update();
+          break;
+        }
 
-      var movementIndex = 0;
-      while (movementIndex < movements.length) {
-        if (movements[movementIndex].currentStep >= movements[movementIndex].steps) {
-          movements[movementIndex].end();
-          movements.splice(movementIndex, 1);
-        }
-        else {
-          movementIndex++;
+        var movementIndex = 0;
+        while (movementIndex < movements.length) {
+          if (movements[movementIndex].currentStep >= movements[movementIndex].steps && movements[movementIndex].started) {
+            movements[movementIndex].end();
+            movements.splice(movementIndex, 1);
+          }
+          else {
+            movementIndex++;
+          }
         }
       }
-    }
-    else {
-      if (functions.length > 0) {
-        var funcIndex = 0;
-        while (funcIndex < functions.length) {
-          functions[funcIndex]();
-          functions.splice(funcIndex, 1);
+      else {
+        if (functions.length > 0) {
+          var funcIndex = 0;
+          while (funcIndex < functions.length) {
+            functions[funcIndex]();
+            functions.splice(funcIndex, 1);
+          }
         }
       }
     }
   }
 
-  public function determinePath(thing:Unit, layer:Grid<Int>) {
-    var start:Point = new Point(0,0);
-    var end:Point   = new Point(0,0);
+  // TODO: This way of pausing and setting animation is tacky
+  public function pause() {
+    paused = !paused;
+    if (movements.length > 0) {
+      movements[0].moveObj.anim.changeState(paused ? "idle" : "walk");
+    }
+  }
 
+  public function determinePath(thing:Unit, layer:Grid<Int>, ?start:Point, ?end:Point) {
+    var NULL = 0;
+    var PATH = 8;
+
+    if (start == null) {
+      start = layer.find(24);
+    }
+
+    if (end == null) {
+      end = layer.find(32);
+    }
+    else if (layer.get(Std.int(end.x), Std.int(end.y)) == NULL) {
+      return;
+    }
+
+    if (start != null && end != null) {
+      // Move to the starting point
+
+      var current:Point = start.clone();
+      thing.move(1, start.x * tileWidth * tileScaling, start.y * tileHeight * tileScaling);
+
+      var nodes = new Array<Point>();
+      var dirs = [new Point(1,0), new Point(0,1), new Point(-1,0), new Point(0,-1)];
+
+      var safteyNet = 1000;
+      var dir = 15;
+      var travelled:Array<Point> = new Array<Point>();
+      travelled.push(current);
+      var temp:Point = null;
+      var tempWeight:Float = 0;
+      var tempDirs:Array<Point> = new Array<Point>();
+      var tempWeights:Array<Float> = new Array<Float>();
+
+      var fitness = function(pnt:Point):Float { return Point.distance(pnt, end); };
+      var currentFitness = fitness(current);
+
+      while (safteyNet > 0 && !current.equals(end)) {
+        tempDirs = new Array<Point>();
+        tempWeights = new Array<Float>();
+        for (d in 0...dirs.length) {
+          temp = current.add(dirs[d]);
+          if (layer.get(Std.int(temp.x), Std.int(temp.y)) != NULL) {
+            var tempFitness = fitness(temp);
+            tempWeight = currentFitness > fitness(temp) ? 10 : 0.2;
+            for (i in travelled) {
+              if (i.equals(temp)) {
+                tempWeight = 0.1;
+                break;
+              }
+            }
+            tempDirs.push(temp);
+            tempWeights.push(tempWeight);
+          }
+        }
+        if (tempDirs.length > 0) {
+          //temp = tempDirs[Std.random(tempDirs.length)];
+          temp = Utils.weightedRandom(tempDirs, tempWeights);
+          addMovement(thing, temp.x, temp.y, true);
+          travelled.push(temp);
+          current = temp;
+          currentFitness = fitness(current);
+        }
+        else {
+          break;
+        }
+        safteyNet--;
+      }
+    }
   }
 }
 

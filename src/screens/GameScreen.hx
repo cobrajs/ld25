@@ -1,6 +1,7 @@
 package screens;
 
 import nme.events.MouseEvent;
+import nme.geom.Point;
 
 import Field;
 import Spy;
@@ -22,11 +23,14 @@ class GameScreen extends Screen {
 
   private var spy:Spy;
 
+  private var units:Array<Unit>;
+
   private var mover:MovementManager;
 
   private var tileScaling:Float;
 
   private var toolbar:Toolbar;
+  private var statusbar:Toolbar;
 
   public override function new(uWidth:Int, uHeight:Int) {
     super();
@@ -51,13 +55,13 @@ class GameScreen extends Screen {
 
     addChild(spy);
 
-    toolbar = new Toolbar(5);
+    toolbar = new Toolbar(6, true);
     toolbar.x = uWidth - 64;
     toolbar.y = 0;
 
     addChild(toolbar);
 
-    var tempButton = new Button(50, 30, 8);
+    var tempButton = new Button(50, 50, 8);
     tempButton.clickAction = function():Void {
       spy.anim.changeState("shoot");
     };
@@ -65,7 +69,7 @@ class GameScreen extends Screen {
 
     toolbar.addButton(tempButton, 70, 10);
 
-    var tempButton = new Button(50, 30, 8);
+    tempButton = new Button(50, 50, 8);
     tempButton.clickAction = function():Void {
       spy.anim.changeState("walk");
     };
@@ -73,7 +77,7 @@ class GameScreen extends Screen {
 
     toolbar.addButton(tempButton, 120, 10);
 
-    var tempButton = new Button(50, 30, 8);
+    tempButton = new Button(50, 50, 8);
     tempButton.clickAction = function():Void {
       spy.anim.changeState("idle");
     };
@@ -83,12 +87,24 @@ class GameScreen extends Screen {
 
     mover = new MovementManager(tiles.tileWidth, tiles.tileHeight, tileScaling);
 
-    mover.addMovement(spy, 2, 9, true);
-    mover.addMovement(spy, 2, 5, true);
-    mover.addMovement(spy, 5, 5, true);
-    mover.addMovement(spy, 5, 3, true);
-    mover.addAction(function() {spy.anim.changeState("shoot");});
-    //mover.addMovement(spy, 15, 3, true);
+    mover.determinePath(spy, tiles.getLayer("Movement"));
+
+
+    tempButton = new Button(50, 50, 8);
+    tempButton.clickAction = function():Void {
+      mover.pause();
+    };
+    tempButton.setText("Pause");
+
+    toolbar.addButton(tempButton, 220, 10);
+
+
+    statusbar = new Toolbar(4);
+    statusbar.x = uWidth - 64;
+    statusbar.y = uHeight - 64;
+
+    addChild(statusbar);
+
     
     field.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
   }
@@ -105,6 +121,10 @@ class GameScreen extends Screen {
   }
 
   public function mouseDown(event:MouseEvent) {
-    mover.addMovement(spy, Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)), true);
+    //mover.addMovement(spy, Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)), true);
+    mover.determinePath(spy, tiles.getLayer("Movement"), 
+        new Point(Std.int(spy.x / (tiles.tileWidth * tileScaling)), Std.int(spy.y / (tiles.tileHeight * tileScaling))), 
+        new Point(Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)))
+    );
   }
 }

@@ -1,5 +1,7 @@
 package tiles;
 
+import nme.geom.Point;
+
 class Grid<T> {
   public var data:Array<Array<T>>;
   public var width:Int;
@@ -41,6 +43,9 @@ class Grid<T> {
   }
 
   public function get(x:Int, y:Int):T {
+    if (y < 0 || x < 0) {
+      return defaultValue;
+    }
     if (y >= data.length || x >= data[0].length) {
       return defaultValue;
     }
@@ -48,7 +53,13 @@ class Grid<T> {
   }
 
 
-  public function find(t:T) {
+  public function find(t:T):Point {
+    for (v in iterPos()) {
+      if (get(v[0], v[1]) == t) {
+        return new Point(v[0], v[1]);
+      }
+    }
+    return null;
   }
 
 

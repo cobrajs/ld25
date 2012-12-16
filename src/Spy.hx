@@ -7,13 +7,13 @@ import Unit;
 import graphics.Animation;
 
 class Spy extends Unit {
-  public var health:Int;
-
   public var position:Point;
   public var overType:Int;
 
   public function new() {
     super();
+
+    type = Spy;
 
     anim = new Animation("spy.xml", this.graphics, false, true);
     anim.update();

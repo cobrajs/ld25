@@ -15,10 +15,10 @@ class Toolbar extends Sprite{
   public var tilesheet:Tilesheet;
   public var out:Bool;
 
-  public function new(width:Int) {
+  public function new(width:Int, ?flipped:Bool = false) {
     super();
 
-    tilesheet = TilesheetHelper.generateTilesheet("toolbar.png", 2, 2, false, true);
+    tilesheet = TilesheetHelper.generateTilesheet("toolbar.png", 2, 2, false, flipped);
 
     var drawArray:Array<Float> = [0,0,0];
     for (x in 1...width) {

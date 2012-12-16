@@ -9,5 +9,10 @@ import Unit;
 
 */
 class Mook extends Unit() {
-  public var 
+  public function new() {
+    super();
+
+    type = Mook;
+  }
 }
+

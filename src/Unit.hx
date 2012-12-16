@@ -5,9 +5,23 @@ import nme.geom.Point;
 
 import graphics.Animation;
 
+enum UnitType {
+  Mook;
+  EliteMook;
+  CamoMook;
+  Sniper;
+  Dragon;
+  Spy;
+}
+
 class Unit extends Sprite {
   public var anim:Animation;
-  public var type:Int;
+  public var type:UnitType;
+
+  //
+  // Unit stats
+  //
+  public var health:Float; // 0 - 1 scale
 
   public function new() {
     super();

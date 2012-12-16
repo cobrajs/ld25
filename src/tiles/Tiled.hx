@@ -76,4 +76,11 @@ class Tiled {
       tilesheet.drawTiles(gfx, drawArray, Tilesheet.TILE_SCALE);
     }
   }
+
+  public function getLayer(layerName:String) {
+    if (layers.exists(layerName)) {
+      return layers.get(layerName);
+    }
+    return null;
+  }
 }
