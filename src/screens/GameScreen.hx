@@ -8,6 +8,8 @@ import util.MovementManager;
 
 import tiles.Tiled;
 
+import ui.Toolbar;
+
 class GameScreen extends Screen {
   public var field:Field;
 
@@ -21,6 +23,8 @@ class GameScreen extends Screen {
   private var mover:MovementManager;
 
   private var tileScaling:Float;
+
+  private var toolbar:Toolbar;
 
   public override function new(uWidth:Int, uHeight:Int) {
     super();
@@ -43,9 +47,16 @@ class GameScreen extends Screen {
 
     addChild(spy);
 
+    toolbar = new Toolbar();
+    toolbar.x = uWidth - 64;
+    toolbar.y = 0;
+
+    addChild(toolbar);
+    trace(toolbar.width);
+
     mover = new MovementManager(tiles.tileWidth, tiles.tileHeight, tileScaling);
     
-    addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+    field.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
   }
 
   public override function enter() {
@@ -59,7 +70,7 @@ class GameScreen extends Screen {
     spy.update();
   }
 
-  public function mouseUp(event:MouseEvent) {
+  public function mouseDown(event:MouseEvent) {
     mover.addMovement(spy, Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)), true);
   }
 }
