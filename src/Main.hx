@@ -21,6 +21,8 @@ import screens.GameScreen;
 
 import screens.ScreenManager;
 
+import tiles.Grid;
+
 class Main extends Sprite {
 
   private var screenManager:ScreenManager;

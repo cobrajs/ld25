@@ -51,19 +51,35 @@ class GameScreen extends Screen {
 
     addChild(spy);
 
-    toolbar = new Toolbar(4);
+    toolbar = new Toolbar(5);
     toolbar.x = uWidth - 64;
     toolbar.y = 0;
 
     addChild(toolbar);
 
-    var tempButton = new Button(70, 50, 8);
+    var tempButton = new Button(50, 30, 8);
     tempButton.clickAction = function():Void {
       spy.anim.changeState("shoot");
     };
     tempButton.setText("Shoot");
 
     toolbar.addButton(tempButton, 70, 10);
+
+    var tempButton = new Button(50, 30, 8);
+    tempButton.clickAction = function():Void {
+      spy.anim.changeState("walk");
+    };
+    tempButton.setText("Walk");
+
+    toolbar.addButton(tempButton, 120, 10);
+
+    var tempButton = new Button(50, 30, 8);
+    tempButton.clickAction = function():Void {
+      spy.anim.changeState("idle");
+    };
+    tempButton.setText("Idle");
+
+    toolbar.addButton(tempButton, 170, 10);
 
     mover = new MovementManager(tiles.tileWidth, tiles.tileHeight, tileScaling);
 

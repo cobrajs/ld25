@@ -36,7 +36,7 @@ class Toolbar extends Sprite{
   }
 
   private function mouseDown(event:MouseEvent) {
-    if (event.localX < 64 && event.localY < 64 && event.target == event.currentTarget) {
+    if (event.localX < 64 && event.localY < 64 && Std.is(event.target, Toolbar)) {
       if (Math.sqrt(Math.pow(event.localX - 64, 2) + Math.pow(event.localY, 2)) < 64) {
         if (out) {
           x += this.width - 64;

@@ -15,7 +15,7 @@ class Tiled {
   public var tileWidth:Int;
   public var tileHeight:Int;
 
-  public var layers:Hash<Array<Array<Int>>>;
+  public var layers:Hash<Grid<Int>>;
 
   public function new(xmlFilename:String) {
     var rawXML = Xml.parse(Assets.getText("assets/maps/" + xmlFilename));
@@ -41,21 +41,19 @@ class Tiled {
 
     tilesheet = TilesheetHelper.generateTilesheet(tilesImage, tilesImageTilesX, tilesImageTilesY);
 
-    layers = new Hash<Array<Array<Int>>>();
+    layers = new Hash<Grid<Int>>();
 
     for (layer in fast.nodes.layer) {
       var name = layer.att.name;
       var data = layer.node.data.innerData;
       var elems = data.split(",");
-      var tempFull = new Array<Array<Int>>();
+      var tempFull = new Grid<Int>(tilesX, tilesY, 0);
       var tempArray;
 
       for (y in 0...tilesY) {
-        tempArray = new Array<Int>();
         for (x in 0...tilesX) {
-          tempArray.push(Std.parseInt(elems[y * tilesX + x]) - 1);
+          tempFull.set(Std.parseInt(elems[y * tilesX + x]) - 1, x, y);
         }
-        tempFull.push(tempArray);
       }
 
       layers.set(name, tempFull);
@@ -68,13 +66,11 @@ class Tiled {
       var layer = layers.get(layerName);
       var drawArray:Array<Float> = new Array<Float>();
 
-      for (y in 0...layer.length) {
-        for (x in 0...layer[y].length) {
-          drawArray.push(x * tileWidth * scaling);
-          drawArray.push(y * tileHeight * scaling);
-          drawArray.push(layer[y][x]);
-          drawArray.push(scaling);
-        }
+      for (v in layer.iterPos()) {
+        drawArray.push(v[0] * tileWidth * scaling);
+        drawArray.push(v[1] * tileHeight * scaling);
+        drawArray.push(layer.get(v[0], v[1]));
+        drawArray.push(scaling);
       }
 
       tilesheet.drawTiles(gfx, drawArray, Tilesheet.TILE_SCALE);

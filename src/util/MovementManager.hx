@@ -64,6 +64,12 @@ class MovementManager {
       }
     }
   }
+
+  public function determinePath(thing:Unit, layer:Grid<Int>) {
+    var start:Point = new Point(0,0);
+    var end:Point   = new Point(0,0);
+
+  }
 }
 
 class Movement {
