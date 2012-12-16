@@ -15,25 +15,45 @@ class Toolbar extends Sprite{
   public var tilesheet:Tilesheet;
   public var out:Bool;
 
-  public function new() {
+  public function new(width:Int) {
     super();
 
     tilesheet = TilesheetHelper.generateTilesheet("toolbar.png", 2, 2, false, true);
 
-    tilesheet.drawTiles(this.graphics, [0,0,0, 64,0,1, 128,0,1, 192,0,1]);
+    var drawArray:Array<Float> = [0,0,0];
+    for (x in 1...width) {
+      drawArray.push(x * 64);
+      drawArray.push(0);
+      drawArray.push(1);
+    }
+    tilesheet.drawTiles(this.graphics, drawArray);
 
     out = false;
+
+    buttons = new Array<Button>();
 
     addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
   }
 
   private function mouseDown(event:MouseEvent) {
-    if (out) {
-      x += 128;
+    if (event.localX < 64 && event.localY < 64 && event.target == event.currentTarget) {
+      if (Math.sqrt(Math.pow(event.localX - 64, 2) + Math.pow(event.localY, 2)) < 64) {
+        if (out) {
+          x += this.width - 64;
+        }
+        else {
+          x -= this.width - 64;
+        }
+        out = !out;
+      }
     }
-    else {
-      x -= 128;
-    }
-    out = !out;
+  }
+
+  public function addButton(button:Button, posX:Float, posY:Float) {
+    addChild(button);
+    button.x = posX;
+    button.y = posY;
+
+    buttons.push(button);
   }
 }

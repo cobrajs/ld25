@@ -8,6 +8,8 @@ class MovementManager {
   public var tileHeight:Int;
   public var tileScaling:Float;
 
+  public var functions:Array<Void->Void>;
+
   public var movements:Array<Movement>;
 
   public function new(tileWidth:Int, tileHeight:Int, tileScaling:Float) {
@@ -17,31 +19,48 @@ class MovementManager {
     this.tileScaling = tileScaling;
 
     movements = new Array<Movement>();
+
+    functions = new Array<Void->Void>();
   }
 
   public function addMovement(thing:Unit, x:Float, y:Float, ?tilePlace:Bool = false) {
     if (tilePlace) {
-      movements.push(new Movement(thing, x * (tileWidth * tileScaling), y * (tileHeight * tileScaling), tileWidth, tileHeight, 100));
+      movements.push(new Movement(thing, x * (tileWidth * tileScaling), y * (tileHeight * tileScaling), tileWidth, tileHeight, 2));
     }
     else {
       movements.push(new Movement(thing, x, y, tileWidth, tileHeight, 100));
     }
   }
 
-  public function update() {
-    for (movement in movements) {
-      movement.update();
-      break;
-    }
+  public function addAction(func:Void->Void) {
+    functions.push(func);
+  }
 
-    var movementIndex = 0;
-    while (movementIndex < movements.length) {
-      if (movements[movementIndex].currentStep >= movements[movementIndex].steps) {
-        movements[movementIndex].end();
-        movements.splice(movementIndex, 1);
+  public function update() {
+    if (movements.length > 0) {
+      for (movement in movements) {
+        movement.update();
+        break;
       }
-      else {
-        movementIndex++;
+
+      var movementIndex = 0;
+      while (movementIndex < movements.length) {
+        if (movements[movementIndex].currentStep >= movements[movementIndex].steps) {
+          movements[movementIndex].end();
+          movements.splice(movementIndex, 1);
+        }
+        else {
+          movementIndex++;
+        }
+      }
+    }
+    else {
+      if (functions.length > 0) {
+        var funcIndex = 0;
+        while (funcIndex < functions.length) {
+          functions[funcIndex]();
+          functions.splice(funcIndex, 1);
+        }
       }
     }
   }
@@ -73,7 +92,9 @@ class Movement {
 
   public var started:Bool;
 
-  public function new(moveObj:Unit, toX:Float, toY:Float, tileWidth:Int, tileHeight:Int, time:Int) {
+  public var speed:Int;
+
+  public function new(moveObj:Unit, toX:Float, toY:Float, tileWidth:Int, tileHeight:Int, speed:Int) {
     this.moveObj = moveObj;
 
     started = false;
@@ -84,9 +105,9 @@ class Movement {
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
 
-    steps = 100;
     currentStep = 0;
 
+    this.speed = speed;
   }
 
   public function begin() {
@@ -101,8 +122,13 @@ class Movement {
     this.tileX = Std.int(this.currentX / tileWidth);
     this.tileY = Std.int(this.currentY / tileHeight);
 
-    this.moveX = (toX - fromX ) / steps;
-    this.moveY = (toY - fromY) / steps;
+    var diffX = toX - fromX;
+    var diffY = toY - fromY;
+
+    steps = Math.floor(Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2)) / speed);
+
+    this.moveX = diffX / steps;
+    this.moveY = diffY / steps;
 
     moveObj.startMove(new Point(this.toX, this.toY));
   }

@@ -1,6 +1,7 @@
 package screens;
 
 import nme.events.MouseEvent;
+
 import Field;
 import Spy;
 
@@ -9,6 +10,7 @@ import util.MovementManager;
 import tiles.Tiled;
 
 import ui.Toolbar;
+import ui.Button;
 
 class GameScreen extends Screen {
   public var field:Field;
@@ -45,16 +47,32 @@ class GameScreen extends Screen {
 
     spy = new Spy();
 
+    spy.y = 9 * tiles.tileHeight * tileScaling;
+
     addChild(spy);
 
-    toolbar = new Toolbar();
+    toolbar = new Toolbar(4);
     toolbar.x = uWidth - 64;
     toolbar.y = 0;
 
     addChild(toolbar);
-    trace(toolbar.width);
+
+    var tempButton = new Button(70, 50, 8);
+    tempButton.clickAction = function():Void {
+      spy.anim.changeState("shoot");
+    };
+    tempButton.setText("Shoot");
+
+    toolbar.addButton(tempButton, 70, 10);
 
     mover = new MovementManager(tiles.tileWidth, tiles.tileHeight, tileScaling);
+
+    mover.addMovement(spy, 2, 9, true);
+    mover.addMovement(spy, 2, 5, true);
+    mover.addMovement(spy, 5, 5, true);
+    mover.addMovement(spy, 5, 3, true);
+    mover.addAction(function() {spy.anim.changeState("shoot");});
+    //mover.addMovement(spy, 15, 3, true);
     
     field.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
   }
