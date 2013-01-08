@@ -5,19 +5,8 @@ import nme.display.Sprite;
 import nme.events.Event;
 import nme.events.KeyboardEvent;
 import nme.events.MouseEvent;
-import nme.geom.Point;
 import nme.system.System;
 import nme.ui.Keyboard;
-
-import nme.display.BitmapData;
-
-import nme.Assets;
-import haxe.xml.Fast;
-
-import graphics.ImageOpts;
-import graphics.Animation;
-
-import screens.GameScreen;
 
 import screens.ScreenManager;
 
@@ -71,5 +60,5 @@ class Main extends Sprite {
       System.exit(0);
     }
   }
-}
 
+}

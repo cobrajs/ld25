@@ -1,0 +1,12 @@
+<anim>
+  <info>
+    <source>assets/mook_unit.png</source>
+    <tilesx>4</tilesx>
+    <tilesy>4</tilesy>
+  </info>
+  <states>
+    <state name="idle" start="0" end="0" delay="200" />
+    <state name="walk" start="1" end="4" delay="100" />
+    <state name="shoot" start="5" end="6" delay="100" />
+  </states>
+</anim>

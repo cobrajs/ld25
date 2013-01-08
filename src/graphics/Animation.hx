@@ -68,9 +68,9 @@ class Animation {
           tilesheets.get(-1).addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, y * tileHeight, tileWidth, tileHeight));
         }
         if (rotated) {
-          tilesheets.get(90).addTileRect(new Rectangle(Math.floor((tilesX - y - 1) * tileWidth), x * tileHeight, tileWidth, tileHeight));
-          tilesheets.get(180).addTileRect(new Rectangle(Math.floor((tilesX - x - 1) * tileWidth), Math.floor((tilesY - y - 1) * tileHeight), tileWidth, tileHeight));
-          tilesheets.get(270).addTileRect(new Rectangle(Math.floor(y * tileWidth), Math.floor((tilesY - x - 1) * tileHeight), tileWidth, tileHeight));
+          tilesheets.get(90).addTileRect(new Rectangle((tilesX - y - 1) * tileWidth, x * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(180).addTileRect(new Rectangle((tilesX - x - 1) * tileWidth, (tilesY - y - 1) * tileHeight, tileWidth, tileHeight));
+          tilesheets.get(270).addTileRect(new Rectangle(y * tileWidth, (tilesY - x - 1) * tileHeight, tileWidth, tileHeight));
         }
       }
     }

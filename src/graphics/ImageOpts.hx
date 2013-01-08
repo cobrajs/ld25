@@ -54,14 +54,14 @@ class ImageOpts {
     var tempData = new BitmapData(imageData.width, imageData.height, true);
 
     var transformX = 
-      dir == 90 ?   function(x, y) { return imageData.width - y; } :
-      dir == 180 ?  function(x, y) { return imageData.width - x; } :
+      dir == 90 ?   function(x, y) { return imageData.width - y - 1; } :
+      dir == 180 ?  function(x, y) { return imageData.width - x - 1; } :
       /*     270 */ function(x, y) { return y; };
 
     var transformY = 
       dir == 90 ?   function(x, y) { return x; } :
-      dir == 180 ?  function(x, y) { return imageData.height - y; } :
-      /*     270 */ function(x, y) { return imageData.height - x; };
+      dir == 180 ?  function(x, y) { return imageData.height - y - 1; } :
+      /*     270 */ function(x, y) { return imageData.height - x - 1; };
 
     for (y in 0...imageData.height) {
       for (x in 0...imageData.width) {

@@ -13,6 +13,8 @@ import tiles.Tiled;
 import ui.Toolbar;
 import ui.Button;
 
+import mooks.MookManager;
+
 class GameScreen extends Screen {
   public var field:Field;
 
@@ -23,7 +25,7 @@ class GameScreen extends Screen {
 
   private var spy:Spy;
 
-  private var units:Array<Unit>;
+  private var mooks:MookManager;
 
   private var mover:MovementManager;
 
@@ -99,6 +101,10 @@ class GameScreen extends Screen {
     toolbar.addButton(tempButton, 220, 10);
 
 
+    mooks = new MookManager();
+
+    addChild(mooks.addMook(Mook, new Point(6 * tiles.tileWidth * tileScaling, 4 * tiles.tileHeight * tileScaling)));
+
     statusbar = new Toolbar(4);
     statusbar.x = uWidth - 64;
     statusbar.y = uHeight - 64;
@@ -118,13 +124,21 @@ class GameScreen extends Screen {
   public override function update() {
     mover.update();
     spy.update();
+    mooks.update();
   }
 
   public function mouseDown(event:MouseEvent) {
     //mover.addMovement(spy, Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)), true);
-    mover.determinePath(spy, tiles.getLayer("Movement"), 
-        new Point(Std.int(spy.x / (tiles.tileWidth * tileScaling)), Std.int(spy.y / (tiles.tileHeight * tileScaling))), 
-        new Point(Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)))
-    );
+    var tileX = Std.int(event.localX / (tiles.tileWidth * tileScaling));
+    var tileY = Std.int(event.localY / (tiles.tileHeight * tileScaling));
+    if (tiles.getLayer("Placement").get(tileX, tileY) != 0) {
+      addChild(mooks.addMook(Mook, new Point(tileX * tiles.tileWidth * tileScaling, tileY * tiles.tileHeight * tileScaling)));
+    }
+    else {
+      mover.determinePath(spy, tiles.getLayer("Movement"), 
+          new Point(Std.int(spy.x / (tiles.tileWidth * tileScaling)), Std.int(spy.y / (tiles.tileHeight * tileScaling))), 
+          new Point(Std.int(event.localX / (tiles.tileWidth * tileScaling)), Std.int(event.localY / (tiles.tileHeight * tileScaling)))
+      );
+    }
   }
 }

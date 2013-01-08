@@ -18,7 +18,7 @@ class Spy extends Unit {
     anim = new Animation("spy.xml", this.graphics, false, true);
     anim.update();
 
-    health = 10;
+    health = 1;
 
     position = new Point(0, 0);
     overType = 0;
